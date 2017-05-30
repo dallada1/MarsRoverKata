@@ -37,7 +37,6 @@ namespace MarsRover
                 return DirectionEnums.West;
             else
                 return DirectionEnums.InvalidDirection;
-            //Throw Exception?
         }
 
         public void SendCommands(char[] IncomingCommandArray)
@@ -59,7 +58,7 @@ namespace MarsRover
 
         private void Turn(char v)
         {
-            List<DirectionEnums> directions = new List<DirectionEnums>
+            var directions = new List<DirectionEnums>
                 { DirectionEnums.North, DirectionEnums.East, DirectionEnums.South, DirectionEnums.West };
             int currentDirection = directions.IndexOf(Direction);
 
@@ -72,38 +71,47 @@ namespace MarsRover
                 else
                     Direction = directions.ElementAt(currentDirection - 1);
             }
-
         }
 
         private void Move(char moveChar)
         {
             if (moveChar == 'f')
-            {
-                if (Direction == DirectionEnums.North)
-                    YCoordinate = CheckYBoundary(YCoordinate + 1);
-                else if (Direction == DirectionEnums.South)
-                    YCoordinate = CheckYBoundary(YCoordinate - 1);
-                else if (Direction == DirectionEnums.East)
-                    XCoordinate = CheckXBoundary(XCoordinate + 1);
-                else
-                    XCoordinate = CheckXBoundary(XCoordinate - 1);
-            }
+                IncrementPosition(1);
             else
-            {
-                if (Direction == DirectionEnums.North)
-                    YCoordinate = CheckYBoundary(YCoordinate - 1);
-                else if (Direction == DirectionEnums.South)
-                    YCoordinate = CheckYBoundary(YCoordinate + 1);
-                else if (Direction == DirectionEnums.East)
-                    XCoordinate = CheckXBoundary(XCoordinate - 1);
-                else
-                    XCoordinate = CheckXBoundary(XCoordinate + 1);
-            }
+                IncrementPosition(-1);
+        }
+
+        private void IncrementPosition(int offset)
+        {
+            if (Direction == DirectionEnums.North)
+                YCoordinate = CheckYBoundary(YCoordinate + offset);
+            else if (Direction == DirectionEnums.South)
+                YCoordinate = CheckYBoundary(YCoordinate - offset);
+            else if (Direction == DirectionEnums.East)
+                XCoordinate = CheckXBoundary(XCoordinate + offset);
+            else
+                XCoordinate = CheckXBoundary(XCoordinate - offset);
+        }
+
+        private int CheckXBoundary(int coordinate)
+        {
+            var returnCoordinate = 0;
+            if (coordinate < 0)
+                returnCoordinate = WorldWidth - 1;
+            else if (coordinate > WorldWidth - 1)
+                returnCoordinate = 0;
+            else
+                returnCoordinate = coordinate;
+
+            if (!DetectXObstacle(returnCoordinate))
+                return returnCoordinate;
+            else
+                return XCoordinate;
         }
 
         private int CheckYBoundary(int coordinate)
         {
-            int returnCoordinate = 0;
+            var returnCoordinate = 0;
             if (coordinate < 0)
                 returnCoordinate = WorldHeight - 1;
             else if (coordinate > WorldHeight - 1)
@@ -119,7 +127,7 @@ namespace MarsRover
 
         private bool DetectYObstacle(int coordinate)
         {
-            for(int i = 0; i < obstacles.ToArray().Length; i++)
+            for(var i = 0; i < obstacles.ToArray().Length; i++)
             {
                 if (obstacles.ElementAt(i).XCoord == XCoordinate && obstacles.ElementAt(i).YCoord == coordinate)
                     return true;
@@ -127,36 +135,19 @@ namespace MarsRover
             return false;
         }
 
-        public void AddObstacle(int x, int y)
-        {
-            Obstacle obstacle = new Obstacle(x, y);
-            obstacles.Add(obstacle);
-        }
-
         private bool DetectXObstacle(int coordinate)
         {
-            for (int i = 0; i < obstacles.ToArray().Length; i++)
+            for (var i = 0; i < obstacles.ToArray().Length; i++)
             {
                 if (obstacles.ElementAt(i).XCoord == coordinate && obstacles.ElementAt(i).YCoord == YCoordinate)
                     return true;
             }
             return false;
         }
-
-        private int CheckXBoundary(int coordinate)
+        public void AddObstacle(int x, int y)
         {
-            int returnCoordinate = 0;
-            if (coordinate < 0)
-                returnCoordinate = WorldWidth - 1;
-            else if (coordinate > WorldWidth - 1)
-                returnCoordinate = 0;
-            else
-                returnCoordinate = coordinate;
-
-            if (!DetectXObstacle(returnCoordinate))
-                return returnCoordinate;
-            else
-                return XCoordinate;
+            var obstacle = new Obstacle(x, y);
+            obstacles.Add(obstacle);
         }
     }
 }

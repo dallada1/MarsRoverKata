@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="Obstacle.cs" />
     <Compile Include="DirectionEnums.cs" />
-    <Compile Include="LunarSurface.cs" />
     <Compile Include="Rover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
